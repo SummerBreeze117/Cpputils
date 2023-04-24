@@ -37,7 +37,7 @@ while (!q.try_push(x)); // busy-loop直到队列有空间可写
 
 int element;
 bool status_2 = q.try_pop(element); // 如果队列空，status_2 == false
-while (!try_pop(element)); // busy-loop直到队列有数据可读
+while (!q.try_pop(element)); // busy-loop直到队列有数据可读
 ```
 
 
