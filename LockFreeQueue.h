@@ -28,8 +28,7 @@ public:
         Element* e;
         do {
             write_index = write_index_.load(std::memory_order_relaxed);
-            if (write_index >= read_index_.load(std::memory_order_relaxed) + data_.size())
-            {
+            if (write_index >= read_index_.load(std::memory_order_relaxed) + data_.size()) {
                 return false;
             }
             size_t index = write_index % N;
