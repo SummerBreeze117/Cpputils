@@ -9,6 +9,8 @@
 #include <condition_variable>
 #include <deque>
 
+#include <Likely.h>
+
 template<typename T>
 class BlockingQueue
 {
@@ -29,6 +31,7 @@ public:
         }
         // 这里需要提前释放锁
         // if not, 被通知的线程会立即再次阻塞，等待通知线程释放锁
+		// https://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
         notEmpty_.notify_one();
     }
 
@@ -36,7 +39,7 @@ public:
     {
         {
             std::unique_lock<std::mutex> lock(mutex_);
-            if (queue_.size() == capacity_) {
+            if (UNLIKELY(queue_.size() == capacity_)) {
                 return false;
             }
             queue_.push_back(std::move(x));
