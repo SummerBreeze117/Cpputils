@@ -16,10 +16,16 @@ public:
 	Spinlock() : flag_(FREE) {}
 
 	void lock() {
+		int backOffScore = 1;
 		for (int i = 0; flag_.load(std::memory_order_relaxed) || flag_.exchange(LOCKED, std::memory_order_acquire); i ++) {
 			if (i == 8) {
 				i = 0;
-				std::this_thread::yield();
+				for (int j = 0; j < backOffScore; j ++) {
+					std::this_thread::yield();
+				}
+				if (backOffScore < maxBackOffScore) {
+					backOffScore <<= 1;
+				}
 			}
 		}
 	}
@@ -29,6 +35,7 @@ public:
 	}
 private:
 	std::atomic<uint32_t> flag_;
+	const int maxBackOffScore = 16;
 };
 
 
